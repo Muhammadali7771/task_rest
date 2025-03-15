@@ -6,7 +6,9 @@ import epam.com.task_rest.dto.user.UserUpdateDto;
 import java.util.Date;
 
 
-public record TraineeUpdateDto(UserUpdateDto userUpdateDto,
+public record TraineeUpdateDto(String firstName,
+                               String lastName,
+                               boolean isActive,
                                Date dateOfBirth,
                                String address) {
 }
