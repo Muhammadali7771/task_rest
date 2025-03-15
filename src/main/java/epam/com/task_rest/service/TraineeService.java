@@ -32,7 +32,7 @@ public class TraineeService {
         Trainee trainee = traineeMapper.toEntity(traineeCreateDto);
         User user = trainee.getUser();
         String username = usernamePasswordGenerator
-                .generateUsername(traineeCreateDto.userCreateDto().firstName(), traineeCreateDto.userCreateDto().lastName());
+                .generateUsername(traineeCreateDto.firstName(), traineeCreateDto.lastName());
         String password = usernamePasswordGenerator.generatePassword();
         user.setPassword(password);
         user.setUserName(username);
@@ -65,7 +65,7 @@ public class TraineeService {
         traineeRepository.changePassword(username, newPassword);
     }
 
-    public TraineeDto update(TraineeUpdateDto traineeUpdateDto, String username) {
+    public TraineeDto update(String username, TraineeUpdateDto traineeUpdateDto) {
         Trainee trainee = traineeRepository.findTraineeByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + username + " not found"));
         Trainee trainee1 = traineeMapper.partialUpdate(traineeUpdateDto, trainee);

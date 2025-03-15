@@ -23,10 +23,10 @@ public class TraineeMapper {
         if (dto == null) {
             return null;
         }
-        UserCreateDto userCreateDto = dto.userCreateDto();
+
         User user = new User();
-        user.setFirstName(userCreateDto.firstName());
-        user.setLastName(userCreateDto.lastName());
+        user.setFirstName(dto.firstName());
+        user.setLastName(dto.lastName());
 
         Trainee trainee = new Trainee();
         trainee.setAddress(dto.address());
@@ -37,17 +37,14 @@ public class TraineeMapper {
     }
 
     public Trainee partialUpdate(TraineeUpdateDto dto, Trainee trainee) {
-        UserUpdateDto userUpdateDto = dto.userUpdateDto();
         User user = trainee.getUser();
-        if (userUpdateDto != null) {
-            if (userUpdateDto.firstName() != null) {
-                user.setFirstName(userUpdateDto.firstName());
-            }
-            if (userUpdateDto.lastName() != null) {
-                user.setLastName(userUpdateDto.lastName());
-            }
-            user.setActive(userUpdateDto.isActive());
+        if (dto.firstName() != null) {
+            user.setFirstName(dto.firstName());
         }
+        if (dto.lastName() != null) {
+            user.setLastName(dto.lastName());
+        }
+        user.setActive(dto.isActive());
 
         if (dto.address() != null) {
             trainee.setAddress(dto.address());
@@ -64,18 +61,20 @@ public class TraineeMapper {
         }
 
         User user = trainee.getUser();
-        UserDto userDto = new UserDto(user.getFirstName(), user.getLastName(), user.isActive());
+        // UserDto userDto = new UserDto(user.getFirstName(), user.getLastName(), user.isActive());
 
         List<Trainer> trainers = trainee.getTrainers();
         List<TrainerShortDto> trainerShortDtos = new ArrayList<>();
         for (Trainer trainer : trainers) {
             User trainerUser = trainer.getUser();
             UserDto dto = new UserDto(trainerUser.getFirstName(), trainerUser.getLastName(), trainerUser.isActive());
-            TrainerShortDto trainerShortDto = new TrainerShortDto(dto, trainer.getSpecialization().getId());
+            TrainerShortDto trainerShortDto = new TrainerShortDto(trainerUser.getFirstName(), trainerUser.getLastName(),
+                    trainerUser.getUserName(),
+                    trainerUser.isActive(), trainer.getSpecialization().getId());
             trainerShortDtos.add(trainerShortDto);
         }
 
-        TraineeDto traineeDto = new TraineeDto(userDto, trainee.getDateOfBirth(),
+        TraineeDto traineeDto = new TraineeDto(user.getFirstName(), user.getLastName(), user.isActive(), trainee.getDateOfBirth(),
                 trainee.getAddress(), trainerShortDtos);
         return traineeDto;
     }

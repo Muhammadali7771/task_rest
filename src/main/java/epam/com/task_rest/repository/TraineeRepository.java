@@ -47,10 +47,9 @@ public class TraineeRepository {
             return Optional.empty();
         }
     }
-
-    //   @Transactional
+    @Transactional
     public void changePassword(String username, String newPassword) {
-        entityManager.getTransaction().begin();
+      //  entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("""
                 update User u set u.password = :password
                 where u.userName = :username
@@ -60,19 +59,17 @@ public class TraineeRepository {
         query.executeUpdate();
         /*entityManager.flush();
         entityManager.clear();*/
-        entityManager.getTransaction().commit();
+   //     entityManager.getTransaction().commit();
     }
 
-    // @Transactional
+    @Transactional
     public Trainee update(Trainee trainee) {
-        entityManager.getTransaction().begin();
         entityManager.merge(trainee);
-        entityManager.getTransaction().commit();
         return trainee;
     }
-
+    @Transactional
     public void activateOrDeactivateTrainee(String username, boolean isActive) {
-        entityManager.getTransaction().begin();
+    //    entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("""
                 select u from User u left join Trainee t 
                 on u.id =t.user.id where u.userName = :username
@@ -81,7 +78,7 @@ public class TraineeRepository {
         User user = (User) query.getSingleResult();
         user.setActive(isActive);
         entityManager.merge(user);
-        entityManager.getTransaction().commit();
+    //    entityManager.getTransaction().commit();
     }
 
     //@Transactional

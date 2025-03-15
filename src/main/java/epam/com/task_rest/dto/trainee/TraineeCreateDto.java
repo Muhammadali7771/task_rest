@@ -8,5 +8,6 @@ import java.util.Date;
 
 public record TraineeCreateDto(Date dateOfBirth,
                                String address,
-                               UserCreateDto userCreateDto) {
+                               String firstName,
+                               String lastName) {
 }

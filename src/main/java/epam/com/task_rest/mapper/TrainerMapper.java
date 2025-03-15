@@ -92,7 +92,11 @@ public class TrainerMapper {
         User user = trainer.getUser();
         UserDto userDto = new UserDto(user.getFirstName(), user.getLastName(), user.isActive());
 
-        TrainerShortDto trainerShortDto = new TrainerShortDto(userDto, trainer.getSpecialization().getId());
+        TrainerShortDto trainerShortDto = new TrainerShortDto(user.getFirstName(),
+                user.getLastName(),
+                user.getUserName(),
+                user.isActive(),
+                trainer.getSpecialization().getId());
         return trainerShortDto;
     }
 
