@@ -1,10 +1,8 @@
 package epam.com.task_rest.dto.trainee;
 
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import epam.com.task_rest.dto.trainer.TrainerShortDto;
-import epam.com.task_rest.dto.user.UserDto;
 
 import java.util.Date;
 import java.util.List;

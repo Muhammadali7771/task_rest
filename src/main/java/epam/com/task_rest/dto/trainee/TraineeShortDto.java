@@ -1,8 +1,8 @@
 package epam.com.task_rest.dto.trainee;
 
 
-import epam.com.task_rest.dto.user.UserDto;
-
-public record TraineeShortDto(UserDto userDto,
+public record TraineeShortDto(String firstName,
+                              String lastName,
+                              boolean isActive,
                               String username) {
 }

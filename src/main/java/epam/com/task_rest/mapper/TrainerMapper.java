@@ -5,9 +5,6 @@ import epam.com.task_rest.dto.trainer.TrainerCreateDto;
 import epam.com.task_rest.dto.trainer.TrainerDto;
 import epam.com.task_rest.dto.trainer.TrainerShortDto;
 import epam.com.task_rest.dto.trainer.TrainerUpdateDto;
-import epam.com.task_rest.dto.user.UserCreateDto;
-import epam.com.task_rest.dto.user.UserDto;
-import epam.com.task_rest.dto.user.UserUpdateDto;
 import epam.com.task_rest.entity.Trainee;
 import epam.com.task_rest.entity.Trainer;
 import epam.com.task_rest.entity.TrainingType;
@@ -30,11 +27,10 @@ public class TrainerMapper {
         if (dto == null) {
             return null;
         }
-        UserCreateDto userCreateDto = dto.userCreateDto();
 
         User user = new User();
-        user.setLastName(userCreateDto.lastName());
-        user.setFirstName(userCreateDto.firstName());
+        user.setLastName(dto.lastName());
+        user.setFirstName(dto.firstName());
 
         Trainer trainer = new Trainer();
         Integer trainingTypeId = dto.specializationId();
@@ -46,17 +42,14 @@ public class TrainerMapper {
     }
 
     public Trainer partialUpdate(TrainerUpdateDto dto, Trainer trainer) {
-        UserUpdateDto userUpdateDto = dto.userUpdateDto();
         User user = trainer.getUser();
-        if (userUpdateDto != null) {
-            if (userUpdateDto.firstName() != null) {
-                user.setFirstName(userUpdateDto.firstName());
-            }
-            if (userUpdateDto.lastName() != null) {
-                user.setLastName(userUpdateDto.lastName());
-            }
-            user.setActive(userUpdateDto.isActive());
+        if (dto.firstName() != null) {
+            user.setFirstName(dto.firstName());
         }
+        if (dto.lastName() != null) {
+            user.setLastName(dto.lastName());
+        }
+        user.setActive(dto.isActive());
 
         Integer trainingTypeId = dto.specializationId();
         TrainingType trainingType = trainingTypeService.getTrainingType(trainingTypeId);
@@ -71,17 +64,16 @@ public class TrainerMapper {
         }
 
         User user = trainer.getUser();
-        UserDto userDto = new UserDto(user.getFirstName(), user.getLastName(), user.isActive());
 
         List<Trainee> trainees = trainer.getTrainees();
         List<TraineeShortDto> traineeShortDtos = new ArrayList<>();
         for (Trainee trainee : trainees) {
             User traineeUser = trainee.getUser();
-            UserDto userDto1 = new UserDto(traineeUser.getFirstName(), traineeUser.getLastName(), traineeUser.isActive());
-            TraineeShortDto traineeShortDto = new TraineeShortDto(userDto1, traineeUser.getUserName());
+            TraineeShortDto traineeShortDto = new TraineeShortDto(traineeUser.getFirstName(), traineeUser.getLastName(),
+                    traineeUser.isActive(), traineeUser.getUserName());
             traineeShortDtos.add(traineeShortDto);
         }
-        TrainerDto trainerDto = new TrainerDto(userDto, trainer.getSpecialization().getId(), traineeShortDtos);
+        TrainerDto trainerDto = new TrainerDto(user.getFirstName(), user.getLastName(), user.isActive(), trainer.getSpecialization().getId(), traineeShortDtos);
         return trainerDto;
     }
 
@@ -90,7 +82,6 @@ public class TrainerMapper {
             return null;
         }
         User user = trainer.getUser();
-        UserDto userDto = new UserDto(user.getFirstName(), user.getLastName(), user.isActive());
 
         TrainerShortDto trainerShortDto = new TrainerShortDto(user.getFirstName(),
                 user.getLastName(),

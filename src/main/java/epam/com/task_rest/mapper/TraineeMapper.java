@@ -5,9 +5,6 @@ import epam.com.task_rest.dto.trainee.TraineeCreateDto;
 import epam.com.task_rest.dto.trainee.TraineeDto;
 import epam.com.task_rest.dto.trainee.TraineeUpdateDto;
 import epam.com.task_rest.dto.trainer.TrainerShortDto;
-import epam.com.task_rest.dto.user.UserCreateDto;
-import epam.com.task_rest.dto.user.UserDto;
-import epam.com.task_rest.dto.user.UserUpdateDto;
 import epam.com.task_rest.entity.Trainee;
 import epam.com.task_rest.entity.Trainer;
 import epam.com.task_rest.entity.User;
@@ -67,7 +64,6 @@ public class TraineeMapper {
         List<TrainerShortDto> trainerShortDtos = new ArrayList<>();
         for (Trainer trainer : trainers) {
             User trainerUser = trainer.getUser();
-            UserDto dto = new UserDto(trainerUser.getFirstName(), trainerUser.getLastName(), trainerUser.isActive());
             TrainerShortDto trainerShortDto = new TrainerShortDto(trainerUser.getFirstName(), trainerUser.getLastName(),
                     trainerUser.getUserName(),
                     trainerUser.isActive(), trainer.getSpecialization().getId());

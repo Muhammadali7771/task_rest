@@ -1,7 +1,10 @@
 package epam.com.task_rest.service;
 
 
+import epam.com.task_rest.dto.ChangeLoginDto;
+import epam.com.task_rest.dto.LoginRequestDto;
 import epam.com.task_rest.dto.RegistrationResponseDto;
+import epam.com.task_rest.dto.UpdateTraineeTrainersRequestDto;
 import epam.com.task_rest.dto.trainee.TraineeCreateDto;
 import epam.com.task_rest.dto.trainee.TraineeDto;
 import epam.com.task_rest.dto.trainee.TraineeUpdateDto;
@@ -41,8 +44,8 @@ public class TraineeService {
         return registrationResponseDto;
     }
 
-    public void login(String username, String password) {
-        if (!traineeRepository.checkUsernameAndPasswordMatch(username, password)) {
+    public void login(LoginRequestDto dto) {
+        if (!traineeRepository.checkUsernameAndPasswordMatch(dto.username(), dto.password())) {
             throw new AuthenticationException("Username or password is incorrect");
         }
     }
@@ -58,11 +61,11 @@ public class TraineeService {
         return traineeMapper.toDto(trainee);
     }
 
-    public void changePassword(String username, String oldPassword, String newPassword) {
-        if (!checkIfUsernameAndPasswordMatching(username, oldPassword)) {
+    public void changePassword(ChangeLoginDto dto) {
+        if (!checkIfUsernameAndPasswordMatching(dto.username(), dto.oldPassword())) {
             throw new AuthenticationException("username or password is incorrect");
         }
-        traineeRepository.changePassword(username, newPassword);
+        traineeRepository.changePassword(dto.username(), dto.newPassword());
     }
 
     public TraineeDto update(String username, TraineeUpdateDto traineeUpdateDto) {
@@ -85,10 +88,18 @@ public class TraineeService {
         traineeRepository.deleteByUsername(username);
     }
 
-    public List<TrainerShortDto> updateTraineeTrainerList(String username, List<String> trainers){
-        Trainee trainee = traineeRepository.findTraineeByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + username + " not found"));
-        List<Trainer> trainerList = traineeRepository.updateTraineeTrainerList(username, trainers);
+
+    public List<TrainerShortDto> getTrainersListNotAssignedOnTrainee(String traineeUsername){
+        Trainee trainee = traineeRepository.findTraineeByUsername(traineeUsername)
+                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
+        List<Trainer> trainers = traineeRepository.findTrainersListThatNotAssignedOnTraineeByTraineeUsername(traineeUsername);
+        return trainerMapper.toShortDtoList(trainers);
+    }
+
+    public List<TrainerShortDto> updateTraineeTrainerList(UpdateTraineeTrainersRequestDto dto){
+        Trainee trainee = traineeRepository.findTraineeByUsername(dto.traineeUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + dto.traineeUsername() + " not found"));
+        List<Trainer> trainerList = traineeRepository.updateTraineeTrainerList(dto.traineeUsername(), dto.trainers());
         return trainerMapper.toShortDtoList(trainerList);
     }
 

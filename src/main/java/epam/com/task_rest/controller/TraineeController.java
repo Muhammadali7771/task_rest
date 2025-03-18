@@ -3,13 +3,18 @@ package epam.com.task_rest.controller;
 import epam.com.task_rest.dto.ChangeLoginDto;
 import epam.com.task_rest.dto.LoginRequestDto;
 import epam.com.task_rest.dto.RegistrationResponseDto;
+import epam.com.task_rest.dto.UpdateTraineeTrainersRequestDto;
 import epam.com.task_rest.dto.trainee.TraineeCreateDto;
 import epam.com.task_rest.dto.trainee.TraineeDto;
 import epam.com.task_rest.dto.trainee.TraineeStatusUpdateDto;
 import epam.com.task_rest.dto.trainee.TraineeUpdateDto;
+import epam.com.task_rest.dto.trainer.TrainerShortDto;
 import epam.com.task_rest.service.TraineeService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("gym.com/api/trainee")
@@ -38,7 +43,7 @@ public class TraineeController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequestDto dto){
-        traineeService.login(dto.username(), dto.password());
+        traineeService.login(dto);
         return ResponseEntity.ok().build();
     }
 
@@ -56,9 +61,21 @@ public class TraineeController {
 
     @PutMapping("/change-login")
     public ResponseEntity<Void> changeLogin(@RequestBody ChangeLoginDto dto){
-        traineeService.changePassword(dto.username(), dto.oldPassword(), dto.newPassword());
+        traineeService.changePassword(dto);
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/update-trainer-list")
+    public ResponseEntity<List<TrainerShortDto>> updateTraineeTrainerList(@RequestBody UpdateTraineeTrainersRequestDto dto){
+        List<TrainerShortDto> trainers = traineeService.updateTraineeTrainerList(dto);
+        return new ResponseEntity<>(trainers, HttpStatus.OK);
+    }
+
+    @GetMapping("/unassigned-trainers")
+    public ResponseEntity<List<TrainerShortDto>> getUnassignedTrainers(@RequestParam("username") String traineeUsername){
+        List<TrainerShortDto> trainers = traineeService
+                .getTrainersListNotAssignedOnTrainee(traineeUsername);
+        return new ResponseEntity<>(trainers, HttpStatus.OK);
+    }
 
 }

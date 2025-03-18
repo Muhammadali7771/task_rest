@@ -1,8 +1,7 @@
 package epam.com.task_rest.dto.trainer;
 
 
-import epam.com.task_rest.dto.user.UserCreateDto;
-
-public record TrainerCreateDto(UserCreateDto userCreateDto,
+public record TrainerCreateDto(String firstName,
+                               String lastName,
                                Integer specializationId) {
 }
