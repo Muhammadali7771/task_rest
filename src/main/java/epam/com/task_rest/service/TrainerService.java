@@ -1,12 +1,13 @@
 package epam.com.task_rest.service;
 
 
-import epam.com.task_rest.dto.trainer.TrainerCreateDto;
-import epam.com.task_rest.dto.trainer.TrainerDto;
-import epam.com.task_rest.dto.trainer.TrainerShortDto;
-import epam.com.task_rest.dto.trainer.TrainerUpdateDto;
+import epam.com.task_rest.dto.ChangeLoginDto;
+import epam.com.task_rest.dto.LoginRequestDto;
+import epam.com.task_rest.dto.RegistrationResponseDto;
+import epam.com.task_rest.dto.trainer.*;
 import epam.com.task_rest.entity.Trainer;
 import epam.com.task_rest.entity.User;
+import epam.com.task_rest.exception.AuthenticationException;
 import epam.com.task_rest.exception.ResourceNotFoundException;
 import epam.com.task_rest.mapper.TrainerMapper;
 import epam.com.task_rest.repository.TrainerRepository;
@@ -23,16 +24,16 @@ public class TrainerService {
     private final TrainerMapper trainerMapper;
     private final UsernamePasswordGenerator usernamePasswordGenerator;
 
-    public TrainerDto create(TrainerCreateDto dto){
+    public RegistrationResponseDto create(TrainerCreateDto dto){
         Trainer trainer = trainerMapper.toEntity(dto);
         String username = usernamePasswordGenerator
-                .generateUsername(dto.userCreateDto().firstName(), dto.userCreateDto().lastName());
+                .generateUsername(dto.firstName(), dto.lastName());
         String password = usernamePasswordGenerator.generatePassword();
         User user = trainer.getUser();
         user.setUserName(username);
         user.setPassword(password);
         Trainer savedTrainer = trainerRepository.save(trainer);
-        return trainerMapper.toDto(savedTrainer);
+        return new RegistrationResponseDto(username, password);
     }
 
     public boolean checkIfUsernameAndPasswordMatching(String username, String password) {
@@ -40,10 +41,23 @@ public class TrainerService {
         return isMatch;
     }
 
+    public void login(LoginRequestDto dto){
+        if (!checkIfUsernameAndPasswordMatching(dto.username(), dto.password())){
+            throw new AuthenticationException("username or password is incorrect!");
+        }
+    }
+
     public TrainerDto getTrainerByUsername(String username) {
         Trainer trainer = trainerRepository.findTrainerByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
         return trainerMapper.toDto(trainer);
+    }
+
+    public void changePassword(ChangeLoginDto dto) {
+        if (!checkIfUsernameAndPasswordMatching(dto.username(), dto.oldPassword())) {
+            throw new AuthenticationException("username or password is incorrect");
+        }
+        trainerRepository.changePassword(dto.username(), dto.newPassword());
     }
 
     public TrainerDto update(TrainerUpdateDto dto, String username){
@@ -54,17 +68,12 @@ public class TrainerService {
         return trainerMapper.toDto(updatedTrainer);
     }
 
-    public void activateOrDeactivateTrainer(String username, boolean isActive){
-        Trainer trainer = trainerRepository.findTrainerByUsername(username)
+    public void activateOrDeactivateTrainer(TrainerStatusUpdateDto dto){
+        Trainer trainer = trainerRepository.findTrainerByUsername(dto.username())
                 .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
-        trainerRepository.activateOrDeactivateTrainee(username, isActive);
+        trainerRepository.activateOrDeactivateTrainee(dto.username(), dto.isActive());
     }
 
-    public List<TrainerShortDto> getTrainersListNotAssignedOnTrainee(String traineeUsername){
-        Trainer trainer = trainerRepository.findTrainerByUsername(traineeUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
-        List<Trainer> trainers = trainerRepository.findTrainersListThatNotAssignedOnTraineeByTraineeUsername(traineeUsername);
-        return trainerMapper.toShortDtoList(trainers);
-    }
+
 
 }

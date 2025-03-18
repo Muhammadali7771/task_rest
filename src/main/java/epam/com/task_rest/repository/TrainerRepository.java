@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,10 +19,9 @@ public class TrainerRepository {
         this.entityManager = entityManager;
     }
 
+    @Transactional
     public Trainer save(Trainer trainer){
-        entityManager.getTransaction().begin();
         entityManager.persist(trainer);
-        entityManager.getTransaction().commit();
         return trainer;
     }
 
@@ -45,9 +45,8 @@ public class TrainerRepository {
             return Optional.empty();
         }
     }
-
+    @Transactional
     public void changePassword(String username, String password){
-        entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("""
                 update User u set u.password = :password
                 where u.userName = :username
@@ -56,19 +55,15 @@ public class TrainerRepository {
         query.setParameter("username", username);
         query.executeUpdate();
         //entityManager.clear();
-        entityManager.getTransaction().commit();
     }
 
-    //@Transactional
+    @Transactional
     public Trainer update(Trainer trainer){
-        entityManager.getTransaction().begin();
         entityManager.merge(trainer);
-        entityManager.getTransaction().commit();
         return trainer;
     }
-
+    @Transactional
     public void activateOrDeactivateTrainee(String username, boolean isActive) {
-        entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("""
                 select u from User u left join Trainer t 
                 on u.id = t.user.id where u.userName = :username
@@ -77,20 +72,9 @@ public class TrainerRepository {
         User user = (User) query.getSingleResult();
         user.setActive(isActive);
         entityManager.merge(user);
-        entityManager.getTransaction().commit();
     }
 
 
-    public List<Trainer> findTrainersListThatNotAssignedOnTraineeByTraineeUsername(String traineeUsername){
-        String sql = """
-                select tr.* from trainee_trainer tt inner join trainer tr 
-                    on tr.id = tt.trainer_id where tt.trainee_id not in 
-                (select t.id from trainees t inner join users u on u.id = t.user_id where u.username = :username)   
-                """;
-        Query query = entityManager.createNativeQuery(sql);
-        List<Trainer> trainers = (List<Trainer>) query.getResultList();
-        return trainers;
-    }
 
     public Optional<Trainer> findTrainerById(Integer id){
         Trainer trainer = entityManager.find(Trainer.class, id);

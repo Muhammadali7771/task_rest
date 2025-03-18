@@ -91,8 +91,19 @@ public class TraineeRepository {
         entityManager.getTransaction().commit();
     }
 
+    public List<Trainer> findTrainersListThatNotAssignedOnTraineeByTraineeUsername(String traineeUsername){
+        String sql = """
+                select tr.* from trainee_trainer tt inner join trainers tr 
+                    on tr.id = tt.trainer_id where tt.trainee_id not in 
+                (select t.id from trainees t inner join users u on u.id = t.user_id where u.username = :username)   
+                """;
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("username", traineeUsername);
+        List<Trainer> trainers = (List<Trainer>) query.getResultList();
+        return trainers;
+    }
+    @Transactional
     public List<Trainer> updateTraineeTrainerList(String traineeUsername, List<String> trainersUsernameList) {
-        entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("""
                 select t from Trainee t left join User u on u.id = t.user.id
                 where u.userName = :traineeUsername
@@ -109,7 +120,6 @@ public class TraineeRepository {
         trainee.setTrainers(trainers);
 
         entityManager.merge(trainee);
-        entityManager.getTransaction().commit();
         entityManager.refresh(trainee);
         return trainee.getTrainers();
     }
