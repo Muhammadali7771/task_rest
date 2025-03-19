@@ -65,7 +65,7 @@ public class TraineeController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/update-trainer-list")
+    @PutMapping("/trainer-list")
     public ResponseEntity<List<TrainerShortDto>> updateTraineeTrainerList(@RequestBody UpdateTraineeTrainersRequestDto dto){
         List<TrainerShortDto> trainers = traineeService.updateTraineeTrainerList(dto);
         return new ResponseEntity<>(trainers, HttpStatus.OK);

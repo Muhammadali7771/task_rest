@@ -49,7 +49,6 @@ public class TraineeRepository {
     }
     @Transactional
     public void changePassword(String username, String newPassword) {
-      //  entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("""
                 update User u set u.password = :password
                 where u.userName = :username
@@ -57,9 +56,6 @@ public class TraineeRepository {
         query.setParameter("password", newPassword);
         query.setParameter("username", username);
         query.executeUpdate();
-        /*entityManager.flush();
-        entityManager.clear();*/
-   //     entityManager.getTransaction().commit();
     }
 
     @Transactional
@@ -69,7 +65,6 @@ public class TraineeRepository {
     }
     @Transactional
     public void activateOrDeactivateTrainee(String username, boolean isActive) {
-    //    entityManager.getTransaction().begin();
         Query query = entityManager.createQuery("""
                 select u from User u left join Trainee t 
                 on u.id =t.user.id where u.userName = :username
@@ -78,17 +73,15 @@ public class TraineeRepository {
         User user = (User) query.getSingleResult();
         user.setActive(isActive);
         entityManager.merge(user);
-    //    entityManager.getTransaction().commit();
     }
 
-    //@Transactional
+    @Transactional
     public void deleteByUsername(String username) {
-        entityManager.getTransaction().begin();
-        Query query = entityManager.createQuery("delete from Trainee t " +
-                " where t.user.id in (select u.id from User u where u.userName = :username)");
+        Query query = entityManager.createQuery("select t from Trainee t " +
+                "where t.user.userName = :username");
         query.setParameter("username", username);
-        query.executeUpdate();
-        entityManager.getTransaction().commit();
+        Trainee trainee = (Trainee) query.getSingleResult();
+        entityManager.remove(trainee);
     }
 
     public List<Trainer> findTrainersListThatNotAssignedOnTraineeByTraineeUsername(String traineeUsername){
@@ -97,9 +90,9 @@ public class TraineeRepository {
                     on tr.id = tt.trainer_id where tt.trainee_id not in 
                 (select t.id from trainees t inner join users u on u.id = t.user_id where u.username = :username)   
                 """;
-        Query query = entityManager.createNativeQuery(sql);
+        Query query = entityManager.createNativeQuery(sql, Trainer.class);
         query.setParameter("username", traineeUsername);
-        List<Trainer> trainers = (List<Trainer>) query.getResultList();
+        List<Trainer> trainers = query.getResultList();
         return trainers;
     }
     @Transactional
@@ -120,7 +113,6 @@ public class TraineeRepository {
         trainee.setTrainers(trainers);
 
         entityManager.merge(trainee);
-        entityManager.refresh(trainee);
         return trainee.getTrainers();
     }
 
