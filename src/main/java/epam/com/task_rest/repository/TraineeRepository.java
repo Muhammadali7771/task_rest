@@ -86,7 +86,7 @@ public class TraineeRepository {
 
     public List<Trainer> findTrainersListThatNotAssignedOnTraineeByTraineeUsername(String traineeUsername){
         String sql = """
-                select tr.* from trainee_trainer tt inner join trainers tr 
+                select tr.* from trainee_trainer tt right join trainers tr 
                     on tr.id = tt.trainer_id where tt.trainee_id not in 
                 (select t.id from trainees t inner join users u on u.id = t.user_id where u.username = :username)   
                 """;
