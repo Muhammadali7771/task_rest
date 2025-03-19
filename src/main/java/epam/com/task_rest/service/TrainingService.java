@@ -30,17 +30,4 @@ public class TrainingService {
         trainingRepository.save(training);
     }
 
-    public List<TrainingDto> getTraineeTrainingsList(String traineeUsername, Date fromDate, Date toDate, String trainerName, Integer trainingTypeId) {
-        Trainee trainee = traineeRepository.findTraineeByUsername(traineeUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee not found"));
-        List<Training> trainings = trainingRepository.getTraineeTrainingsListByTraineeUsernameAndCriteria(traineeUsername, fromDate, toDate, trainerName, trainingTypeId);
-        return trainingMapper.toDtoList(trainings);
-    }
-
-    public List<TrainingDto> getTrainerTrainingsList(String trainerUsername, Date fromDate, Date toDate, String traineeName) {
-        Trainer trainer = trainerRepository.findTrainerByUsername(trainerUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
-        List<Training> trainings = trainingRepository.getTrainerTrainingsListByTrainerUsernameAndCriteria(trainerUsername, fromDate, toDate, traineeName);
-        return trainingMapper.toDtoList(trainings);
-    }
 }

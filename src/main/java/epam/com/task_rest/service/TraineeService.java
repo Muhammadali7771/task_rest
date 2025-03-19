@@ -9,18 +9,23 @@ import epam.com.task_rest.dto.trainee.TraineeCreateDto;
 import epam.com.task_rest.dto.trainee.TraineeDto;
 import epam.com.task_rest.dto.trainee.TraineeUpdateDto;
 import epam.com.task_rest.dto.trainer.TrainerShortDto;
+import epam.com.task_rest.dto.training.TrainingDto;
 import epam.com.task_rest.entity.Trainee;
 import epam.com.task_rest.entity.Trainer;
+import epam.com.task_rest.entity.Training;
 import epam.com.task_rest.entity.User;
 import epam.com.task_rest.exception.AuthenticationException;
 import epam.com.task_rest.exception.ResourceNotFoundException;
 import epam.com.task_rest.mapper.TraineeMapper;
 import epam.com.task_rest.mapper.TrainerMapper;
+import epam.com.task_rest.mapper.TrainingMapper;
 import epam.com.task_rest.repository.TraineeRepository;
+import epam.com.task_rest.repository.TrainingRepository;
 import epam.com.task_rest.util.UsernamePasswordGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,6 +35,8 @@ public class TraineeService {
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
     private final UsernamePasswordGenerator usernamePasswordGenerator;
+    private final TrainingRepository trainingRepository;
+    private final TrainingMapper trainingMapper;
 
     public RegistrationResponseDto create(TraineeCreateDto traineeCreateDto) {
         Trainee trainee = traineeMapper.toEntity(traineeCreateDto);
@@ -86,6 +93,13 @@ public class TraineeService {
         Trainee trainee = traineeRepository.findTraineeByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + username + " not found"));
         traineeRepository.deleteByUsername(username);
+    }
+
+    public List<TrainingDto> getTraineeTrainingsList(String traineeUsername, Date fromDate, Date toDate, String trainerName, String trainingTypeName) {
+        Trainee trainee = traineeRepository.findTraineeByUsername(traineeUsername)
+                .orElseThrow(() -> new ResourceNotFoundException("Trainee not found"));
+        List<Training> trainings = trainingRepository.getTraineeTrainingsListByTraineeUsernameAndCriteria(traineeUsername, fromDate, toDate, trainerName, trainingTypeName);
+        return trainingMapper.toDtoList(trainings);
     }
 
 
