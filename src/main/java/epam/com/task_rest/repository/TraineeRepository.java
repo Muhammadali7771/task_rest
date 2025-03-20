@@ -85,14 +85,30 @@ public class TraineeRepository {
     }
 
     public List<Trainer> findTrainersListThatNotAssignedOnTraineeByTraineeUsername(String traineeUsername){
-        String sql = """
+        /*String sql = """
                 select tr.* from trainee_trainer tt right join trainers tr 
                     on tr.id = tt.trainer_id where tt.trainee_id not in 
-                (select t.id from trainees t inner join users u on u.id = t.user_id where u.username = :username)   
+                (select t.id from trainees t inner join users u on u.id = t.user_id where u.username = :username)
+                or tt.trainee_id IS NULL
                 """;
         Query query = entityManager.createNativeQuery(sql, Trainer.class);
         query.setParameter("username", traineeUsername);
         List<Trainer> trainers = query.getResultList();
+        return trainers;*/
+        String sql1 = "select t.id from Trainee t where t.user.userName = :traineeUsername";
+        Query query1 = entityManager.createQuery(sql1, Integer.class);
+        query1.setParameter("traineeUsername", traineeUsername);
+        Integer traineeId = (Integer) query1.getSingleResult();
+        System.out.println(traineeId + "-----");
+        String sql2 = "select t.trainer_id from trainee_trainer t where t.trainee_id = :traineeId";
+        Query query2 = entityManager.createNativeQuery(sql2, Integer.class);
+        query2.setParameter("traineeId", traineeId);
+        List<Integer> trainerIds = (List<Integer>) query2.getResultList();
+        System.out.println(trainerIds + "----");
+        String sql3 = "select t from Trainer t where t.id not in (:trainerIds)";
+        TypedQuery<Trainer> query3 = entityManager.createQuery(sql3, Trainer.class);
+        query3.setParameter("trainerIds", trainerIds);
+        List<Trainer> trainers = query3.getResultList();
         return trainers;
     }
     @Transactional
