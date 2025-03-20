@@ -4,6 +4,7 @@ import epam.com.task_rest.entity.Training;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -16,10 +17,9 @@ public class TrainingRepository {
         this.entityManager = entityManager;
     }
 
+    @Transactional
     public Training save(Training training) {
-        entityManager.getTransaction().begin();
         entityManager.persist(training);
-        entityManager.getTransaction().commit();
         return training;
     }
 
@@ -49,7 +49,7 @@ public class TrainingRepository {
             query.setParameter("trainerName", trainerName);
         }
         if (trainingTypeName != null) {
-            query.setParameter("trainingType", trainingTypeName);
+            query.setParameter("trainingTypeName", trainingTypeName);
         }
         List<Training> trainings = query.getResultList();
         return trainings;
