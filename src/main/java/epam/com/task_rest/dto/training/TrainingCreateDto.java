@@ -1,11 +1,24 @@
 package epam.com.task_rest.dto.training;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Date;
 
-public record TrainingCreateDto(String traineeUsername,
-                                String trainerUsername,
-                                String trainingName,
-                                Date trainingDate,
-                                Integer trainingTypeId,
-                                Number trainingDuration) {
+public record TrainingCreateDto(
+        @NotBlank(message = "trainee username can not be null and blank")
+        String traineeUsername,
+        @NotBlank(message = "trainer username can not be null and blank")
+        String trainerUsername,
+        @NotBlank(message = "training name can not be null and blank")
+        String trainingName,
+        @NotNull(message = "training date can not be null")
+        @FutureOrPresent(message = "training date should be in the future")
+        Date trainingDate,
+        @NotNull(message = "training type id can not be null")
+        Integer trainingTypeId,
+        @NotNull(message = "training duration can not be null")
+        Number trainingDuration) {
 }

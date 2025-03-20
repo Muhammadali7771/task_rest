@@ -1,7 +1,14 @@
 package epam.com.task_rest.dto.trainer;
 
 
-public record TrainerCreateDto(String firstName,
-                               String lastName,
-                               Integer specializationId) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record TrainerCreateDto(
+        @NotBlank(message = "first name can not be blank and null")
+        String firstName,
+        @NotBlank(message = "last name can not be blank and null")
+        String lastName,
+        @NotNull(message = "specializationId can not be null")
+        Integer specializationId) {
 }

@@ -2,6 +2,7 @@ package epam.com.task_rest.controller;
 
 import epam.com.task_rest.dto.training.TrainingCreateDto;
 import epam.com.task_rest.service.TrainingService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class TrainingController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> add(@RequestBody TrainingCreateDto trainingCreateDto) {
+    public ResponseEntity<Void> add(@RequestBody @Valid TrainingCreateDto trainingCreateDto) {
         trainingService.create(trainingCreateDto);
         return ResponseEntity.ok().build();
     }

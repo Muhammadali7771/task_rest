@@ -6,6 +6,7 @@ import epam.com.task_rest.dto.RegistrationResponseDto;
 import epam.com.task_rest.dto.trainer.*;
 import epam.com.task_rest.dto.training.TrainingDto;
 import epam.com.task_rest.service.TrainerService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class TrainerController {
     }
 
     @PostMapping
-    public ResponseEntity<RegistrationResponseDto> register(@RequestBody TrainerCreateDto dto) {
+    public ResponseEntity<RegistrationResponseDto> register(@RequestBody @Valid TrainerCreateDto dto) {
         RegistrationResponseDto responseDto = trainerService.create(dto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
@@ -36,13 +37,13 @@ public class TrainerController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequestDto dto) {
+    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequestDto dto) {
         trainerService.login(dto);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/change-login")
-    public ResponseEntity<Void> changeLogin(@RequestBody ChangeLoginDto dto) {
+    public ResponseEntity<Void> changeLogin(@RequestBody @Valid ChangeLoginDto dto) {
         trainerService.changePassword(dto);
         return ResponseEntity.noContent().build();
     }
