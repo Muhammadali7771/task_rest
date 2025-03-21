@@ -2,6 +2,9 @@ package epam.com.task_rest.controller;
 
 import epam.com.task_rest.dto.training_type.TrainingTypeDto;
 import epam.com.task_rest.service.TrainingTypeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,11 @@ public class TrainingTypeController {
     }
 
     @GetMapping
+    @Operation(summary = "Retrieves training types")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieves the training types"),
+            @ApiResponse(responseCode = "500", description = "Application failed to process the request")
+    })
     public ResponseEntity<List<TrainingTypeDto>> getTrainingTypes() {
         List<TrainingTypeDto> allTrainingTypes = trainingTypeService.getAllTrainingTypes();
         return new ResponseEntity<>(allTrainingTypes, HttpStatus.OK);
