@@ -76,14 +76,16 @@ public class TrainerService {
     }
 
     public void activateOrDeactivateTrainer(TrainerStatusUpdateDto dto){
-        Trainer trainer = trainerRepository.findTrainerByUsername(dto.username())
-                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
+        if (!trainerRepository.existsByUsername(dto.username())) {
+            throw new ResourceNotFoundException("Trainer not found");
+        }
         trainerRepository.activateOrDeactivateTrainee(dto.username(), dto.isActive());
     }
 
     public List<TrainingDto> getTrainerTrainingsList(String trainerUsername, Date fromDate, Date toDate, String traineeName) {
-        Trainer trainer = trainerRepository.findTrainerByUsername(trainerUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
+        if (!trainerRepository.existsByUsername(trainerUsername)) {
+            throw new ResourceNotFoundException("Trainer not found");
+        }
         List<Training> trainings = trainingRepository.getTrainerTrainingsListByTrainerUsernameAndCriteria(trainerUsername, fromDate, toDate, traineeName);
         return trainingMapper.toDtoList(trainings);
     }

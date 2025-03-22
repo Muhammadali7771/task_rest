@@ -22,7 +22,7 @@ public class TrainingTypeService {
 
     public TrainingType getTrainingType(Integer id) {
         return trainingTypeRepository.getTrainingTypeById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Training type not found with id: " + id));
+                () -> new ResourceNotFoundException("Training type not found"));
     }
 
     public List<TrainingTypeDto> getAllTrainingTypes() {
