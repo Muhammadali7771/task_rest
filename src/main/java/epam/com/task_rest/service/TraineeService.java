@@ -4,7 +4,7 @@ package epam.com.task_rest.service;
 import epam.com.task_rest.dto.ChangeLoginDto;
 import epam.com.task_rest.dto.LoginRequestDto;
 import epam.com.task_rest.dto.RegistrationResponseDto;
-import epam.com.task_rest.dto.UpdateTraineeTrainersRequestDto;
+import epam.com.task_rest.dto.UpdateTraineeTrainersListDto;
 import epam.com.task_rest.dto.trainee.TraineeCreateDto;
 import epam.com.task_rest.dto.trainee.TraineeDto;
 import epam.com.task_rest.dto.trainee.TraineeUpdateDto;
@@ -64,7 +64,7 @@ public class TraineeService {
 
     public TraineeDto getTraineeByUsername(String username) {
         Trainee trainee = traineeRepository.findTraineeByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + username + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Trainee not found"));
         return traineeMapper.toDto(trainee);
     }
 
@@ -77,42 +77,47 @@ public class TraineeService {
 
     public TraineeDto update(String username, TraineeUpdateDto traineeUpdateDto) {
         Trainee trainee = traineeRepository.findTraineeByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + username + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Trainee not found"));
         Trainee trainee1 = traineeMapper.partialUpdate(traineeUpdateDto, trainee);
         Trainee updatedTrainee = traineeRepository.update(trainee1);
         return traineeMapper.toDto(updatedTrainee);
     }
 
     public void activateOrDeactivateTrainee(String username, boolean isActive) {
-        Trainee trainee = traineeRepository.findTraineeByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + username + " not found"));
+        if (!traineeRepository.existsByUsername(username)) {
+            throw new ResourceNotFoundException("Trainee not found");
+        }
         traineeRepository.activateOrDeactivateTrainee(username, isActive);
     }
 
     public void deleteTraineeByUsername(String username) {
-        Trainee trainee = traineeRepository.findTraineeByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + username + " not found"));
+        if (!traineeRepository.existsByUsername(username)) {
+            throw new ResourceNotFoundException("Trainee not found");
+        }
         traineeRepository.deleteByUsername(username);
     }
 
     public List<TrainingDto> getTraineeTrainingsList(String traineeUsername, Date fromDate, Date toDate, String trainerName, Integer trainingTypeId) {
-        Trainee trainee = traineeRepository.findTraineeByUsername(traineeUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee not found"));
+        if (!traineeRepository.existsByUsername(traineeUsername)) {
+            throw new ResourceNotFoundException("Trainee not found");
+        }
         List<Training> trainings = trainingRepository.getTraineeTrainingsListByTraineeUsernameAndCriteria(traineeUsername, fromDate, toDate, trainerName, trainingTypeId);
         return trainingMapper.toDtoList(trainings);
     }
 
 
     public List<TrainerShortDto> getTrainersListNotAssignedOnTrainee(String traineeUsername){
-        Trainee trainee = traineeRepository.findTraineeByUsername(traineeUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
+        if (!traineeRepository.existsByUsername(traineeUsername)) {
+            throw new ResourceNotFoundException("Trainee not found");
+        }
         List<Trainer> trainers = traineeRepository.findTrainersListThatNotAssignedOnTraineeByTraineeUsername(traineeUsername);
         return trainerMapper.toShortDtoList(trainers);
     }
 
-    public List<TrainerShortDto> updateTraineeTrainerList(UpdateTraineeTrainersRequestDto dto){
-        Trainee trainee = traineeRepository.findTraineeByUsername(dto.traineeUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee with username " + dto.traineeUsername() + " not found"));
+    public List<TrainerShortDto> updateTraineeTrainerList(UpdateTraineeTrainersListDto dto){
+        if (!traineeRepository.existsByUsername(dto.traineeUsername())) {
+            throw new ResourceNotFoundException("Trainee not found");
+        }
         List<Trainer> trainerList = traineeRepository.updateTraineeTrainerList(dto.traineeUsername(), dto.trainers());
         return trainerMapper.toShortDtoList(trainerList);
     }
