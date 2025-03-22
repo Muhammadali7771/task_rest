@@ -139,8 +139,8 @@ public class TraineeController {
                                                              @RequestParam(name = "period-from", required = false) Date periodFrom,
                                                              @RequestParam(name = "period-to", required = false) Date periodTo,
                                                              @RequestParam(name = "trainer-name", required = false) String trainerName,
-                                                             @RequestParam(name = "training-type", required = false) String trainingTypeName) {
-        List<TrainingDto> trainings = traineeService.getTraineeTrainingsList(traineeUsername, periodFrom, periodTo, trainerName, trainingTypeName);
+                                                             @RequestParam(name = "training-type", required = false) Integer trainingTypeId) {
+        List<TrainingDto> trainings = traineeService.getTraineeTrainingsList(traineeUsername, periodFrom, periodTo, trainerName, trainingTypeId);
         return ResponseEntity.ok(trainings);
     }
 
