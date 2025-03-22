@@ -95,10 +95,10 @@ public class TraineeService {
         traineeRepository.deleteByUsername(username);
     }
 
-    public List<TrainingDto> getTraineeTrainingsList(String traineeUsername, Date fromDate, Date toDate, String trainerName, String trainingTypeName) {
+    public List<TrainingDto> getTraineeTrainingsList(String traineeUsername, Date fromDate, Date toDate, String trainerName, Integer trainingTypeId) {
         Trainee trainee = traineeRepository.findTraineeByUsername(traineeUsername)
                 .orElseThrow(() -> new ResourceNotFoundException("Trainee not found"));
-        List<Training> trainings = trainingRepository.getTraineeTrainingsListByTraineeUsernameAndCriteria(traineeUsername, fromDate, toDate, trainerName, trainingTypeName);
+        List<Training> trainings = trainingRepository.getTraineeTrainingsListByTraineeUsernameAndCriteria(traineeUsername, fromDate, toDate, trainerName, trainingTypeId);
         return trainingMapper.toDtoList(trainings);
     }
 

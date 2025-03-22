@@ -23,7 +23,7 @@ public class TrainingRepository {
         return training;
     }
 
-    public List<Training> getTraineeTrainingsListByTraineeUsernameAndCriteria(String traineeUsername, Date fromDate, Date toDate, String trainerName, String trainingTypeName) {
+    public List<Training> getTraineeTrainingsListByTraineeUsernameAndCriteria(String traineeUsername, Date fromDate, Date toDate, String trainerName, Integer trainingTypeId) {
         String sql = "select t from Training t where t.trainee.user.userName = :traineeUsername ";
         if (fromDate != null) {
             sql = sql + " and t.trainingDate > :fromDate ";
@@ -34,8 +34,8 @@ public class TrainingRepository {
         if (trainerName != null) {
             sql = sql + " and t.trainer.user.firstName = :trainerName";
         }
-        if (trainingTypeName != null) {
-            sql = sql + " and t.trainingType.trainingTypeName = :trainingTypeName";
+        if (trainingTypeId != null) {
+            sql = sql + " and t.trainingType.id = :trainingTypeId";
         }
         TypedQuery<Training> query = entityManager.createQuery(sql, Training.class);
         query.setParameter("traineeUsername", traineeUsername);
@@ -48,8 +48,8 @@ public class TrainingRepository {
         if (trainerName != null) {
             query.setParameter("trainerName", trainerName);
         }
-        if (trainingTypeName != null) {
-            query.setParameter("trainingTypeName", trainingTypeName);
+        if (trainingTypeId != null) {
+            query.setParameter("trainingTypeName", trainingTypeId);
         }
         List<Training> trainings = query.getResultList();
         return trainings;
