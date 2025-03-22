@@ -3,7 +3,7 @@ package epam.com.task_rest.controller;
 import epam.com.task_rest.dto.ChangeLoginDto;
 import epam.com.task_rest.dto.LoginRequestDto;
 import epam.com.task_rest.dto.RegistrationResponseDto;
-import epam.com.task_rest.dto.UpdateTraineeTrainersRequestDto;
+import epam.com.task_rest.dto.UpdateTraineeTrainersListDto;
 import epam.com.task_rest.dto.trainee.TraineeCreateDto;
 import epam.com.task_rest.dto.trainee.TraineeDto;
 import epam.com.task_rest.dto.trainee.TraineeStatusUpdateDto;
@@ -123,7 +123,7 @@ public class TraineeController {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
-    public ResponseEntity<List<TrainerShortDto>> updateTraineeTrainerList(@RequestBody UpdateTraineeTrainersRequestDto dto) {
+    public ResponseEntity<List<TrainerShortDto>> updateTraineeTrainerList(@RequestBody UpdateTraineeTrainersListDto dto) {
         List<TrainerShortDto> trainers = traineeService.updateTraineeTrainerList(dto);
         return new ResponseEntity<>(trainers, HttpStatus.OK);
     }
