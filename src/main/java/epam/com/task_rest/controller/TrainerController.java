@@ -74,7 +74,7 @@ public class TrainerController {
     })
     public ResponseEntity<Void> changeLogin(@RequestBody @Valid ChangeLoginDto dto) {
         trainerService.changePassword(dto);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping
@@ -101,7 +101,7 @@ public class TrainerController {
     })
     public ResponseEntity<Void> activateOrDeactivateTrainer(@RequestBody TrainerStatusUpdateDto dto) {
         trainerService.activateOrDeactivateTrainer(dto);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/trainings-list")

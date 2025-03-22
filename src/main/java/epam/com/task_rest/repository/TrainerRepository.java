@@ -20,12 +20,12 @@ public class TrainerRepository {
     }
 
     @Transactional
-    public Trainer save(Trainer trainer){
+    public Trainer save(Trainer trainer) {
         entityManager.persist(trainer);
         return trainer;
     }
 
-    public boolean checkUsernameAndPasswordMatch(String username, String password){
+    public boolean checkUsernameAndPasswordMatch(String username, String password) {
         Query query = entityManager.createQuery("select count(t) > 0 from Trainer t left join User u " +
                 " on t.user.id = u.id where u.userName = :username and u.password = :password");
         query.setParameter("username", username);
@@ -34,19 +34,20 @@ public class TrainerRepository {
         return isMatch;
     }
 
-    public Optional<Trainer> findTrainerByUsername(String username){
+    public Optional<Trainer> findTrainerByUsername(String username) {
         try {
             TypedQuery<Trainer> query = entityManager.createQuery("select t from Trainer t left join User u " +
                     "on t.user.id = u.id where u.userName = :username", Trainer.class);
             query.setParameter("username", username);
             Trainer trainer = query.getSingleResult();
             return Optional.of(trainer);
-        }catch (Exception e){
+        } catch (Exception e) {
             return Optional.empty();
         }
     }
+
     @Transactional
-    public void changePassword(String username, String password){
+    public void changePassword(String username, String password) {
         Query query = entityManager.createQuery("""
                 update User u set u.password = :password
                 where u.userName = :username
@@ -54,14 +55,14 @@ public class TrainerRepository {
         query.setParameter("password", password);
         query.setParameter("username", username);
         query.executeUpdate();
-        //entityManager.clear();
     }
 
     @Transactional
-    public Trainer update(Trainer trainer){
+    public Trainer update(Trainer trainer) {
         entityManager.merge(trainer);
         return trainer;
     }
+
     @Transactional
     public void activateOrDeactivateTrainee(String username, boolean isActive) {
         Query query = entityManager.createQuery("""
@@ -71,13 +72,20 @@ public class TrainerRepository {
         query.setParameter("username", username);
         User user = (User) query.getSingleResult();
         user.setActive(isActive);
-        entityManager.merge(user);
+        //   entityManager.merge(user);
     }
 
-
-
-    public Optional<Trainer> findTrainerById(Integer id){
+    public Optional<Trainer> findTrainerById(Integer id) {
         Trainer trainer = entityManager.find(Trainer.class, id);
         return trainer != null ? Optional.of(trainer) : Optional.empty();
+    }
+
+    public boolean existsByUsername(String username) {
+        Query query = entityManager.createQuery("""
+                select count(t) from Trainer t where t.user.userName = :username   
+                """);
+        query.setParameter("username", username);
+        Long exists = (Long) query.getSingleResult();
+        return exists > 0;
     }
 }
