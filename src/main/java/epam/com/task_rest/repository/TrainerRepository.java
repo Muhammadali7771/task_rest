@@ -1,5 +1,6 @@
 package epam.com.task_rest.repository;
 
+import epam.com.task_rest.entity.Trainee;
 import epam.com.task_rest.entity.Trainer;
 import epam.com.task_rest.entity.User;
 import jakarta.persistence.EntityManager;
@@ -87,5 +88,21 @@ public class TrainerRepository {
         query.setParameter("username", username);
         Long exists = (Long) query.getSingleResult();
         return exists > 0;
+    }
+
+    public Optional<Trainer> getTrainerReferenceByUsername(String username) {
+        try {
+            Query query = entityManager.createQuery("""
+                         select t.id from Trainer t inner join User u 
+                         on t.user.id = u.id
+                         where u.userName =: username                
+                    """);
+            query.setParameter("username", username);
+            Integer traineeId = (Integer) query.getSingleResult();
+            Trainer trainerRef = entityManager.getReference(Trainer.class, traineeId);
+            return Optional.of(trainerRef);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }

@@ -74,7 +74,7 @@ public class TraineeRepository {
         query.setParameter("username", username);
         User user = (User) query.getSingleResult();
         user.setActive(isActive);
-      //  entityManager.merge(user);
+        //  entityManager.merge(user);
     }
 
     @Transactional
@@ -91,12 +91,10 @@ public class TraineeRepository {
         Query query1 = entityManager.createQuery(sql1, Integer.class);
         query1.setParameter("traineeUsername", traineeUsername);
         Integer traineeId = (Integer) query1.getSingleResult();
-        System.out.println(traineeId + "-----");
         String sql2 = "select t.trainer_id from trainee_trainer t where t.trainee_id = :traineeId";
         Query query2 = entityManager.createNativeQuery(sql2, Integer.class);
         query2.setParameter("traineeId", traineeId);
         List<Integer> trainerIds = (List<Integer>) query2.getResultList();
-        System.out.println(trainerIds + "----");
         String sql3 = "select t from Trainer t where t.id not in (:trainerIds)";
         TypedQuery<Trainer> query3 = entityManager.createQuery(sql3, Trainer.class);
         query3.setParameter("trainerIds", trainerIds);
@@ -138,4 +136,21 @@ public class TraineeRepository {
         Long count = (Long) query.getSingleResult();
         return count > 0;
     }
+
+    public Optional<Trainee> getTraineeReferenceByUsername(String username) {
+        try {
+            Query query = entityManager.createQuery("""
+                         select t.id from Trainee t inner join User u 
+                         on t.user.id = u.id
+                         where u.userName =: username                
+                    """);
+            query.setParameter("username", username);
+            Integer traineeId = (Integer) query.getSingleResult();
+            Trainee traineeRef = entityManager.getReference(Trainee.class, traineeId);
+            return Optional.of(traineeRef);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
 }

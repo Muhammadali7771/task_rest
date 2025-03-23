@@ -2,6 +2,7 @@ package epam.com.task_rest.repository;
 
 import epam.com.task_rest.entity.TrainingType;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,5 +25,14 @@ public class TrainingTypeRepository {
         List<TrainingType> trainingTypes = entityManager.createQuery("select t from TrainingType t", TrainingType.class)
                 .getResultList();
         return trainingTypes;
+    }
+
+    public Optional<TrainingType> getTrainingTypeReferenceById(Integer id){
+        try {
+            TrainingType trainingType = entityManager.getReference(TrainingType.class, id);
+            return Optional.of(trainingType);
+        }catch (EntityNotFoundException e){
+            return Optional.empty();
+        }
     }
 }

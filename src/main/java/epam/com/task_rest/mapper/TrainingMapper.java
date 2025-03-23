@@ -27,19 +27,11 @@ public class TrainingMapper {
         this.trainingTypeRepository = trainingTypeRepository;
     }
 
-    public Training toEntity(TrainingCreateDto dto) {
+    public Training toEntity(TrainingCreateDto dto, Trainee trainee, Trainer trainer, TrainingType trainingType) {
         if (dto == null) {
             return null;
         }
         Training training = new Training();
-        String trainerUsername = dto.trainerUsername();
-        Trainer trainer = trainerService.findTrainerByUsername(trainerUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found"));
-        String traineeUsername = dto.traineeUsername();
-        Trainee trainee = traineeRepository.findTraineeByUsername(traineeUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("Trainee not found"));
-        TrainingType trainingType = trainingTypeRepository.getTrainingTypeById(dto.trainingTypeId())
-                .orElseThrow(() -> new ResourceNotFoundException("Training type not found"));
         training.setTrainer(trainer);
         training.setTrainee(trainee);
         training.setTrainingType(trainingType);
